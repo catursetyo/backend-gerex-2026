@@ -1,9 +1,11 @@
 {
   "name": "backend-gerex-2026",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Backend Gugus Checker GEREX 2026",
+  "main": "server.js",
   "scripts": {
+    "dev": "node server.js",
+    "init-db": "node init-db.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -23,12 +25,5 @@
     "express": "^5.2.1",
     "sqlite": "^5.1.1",
     "sqlite3": "^6.0.1"
-  }
-}
-
-{
-  "scripts": {
-    "dev": "node server.js",
-    "init-db": "node init-db.js"
   }
 }
