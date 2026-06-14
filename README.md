@@ -27,10 +27,10 @@ backend-gerex-2026/
 │   ├── db.js
 │   ├── init-db.js
 │   ├── package.json
-│   ├── package-lock.json
 │   └── server.js
 ├── node_modules/
-└── README.md
+├── README.md
+└── package-lock.json
 ```
 
 ## Instalasi
