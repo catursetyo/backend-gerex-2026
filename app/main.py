@@ -1,26 +1,18 @@
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-
-from app.routers.gugus_checker import router as gugus_checker_router
+from app.routers import gugus_checker
 
 app = FastAPI(
     title="Backend GEREX 2026 - Gugus Checker",
     description="FastAPI backend untuk mengecek data gugus mahasiswa baru berdasarkan NRP.",
-    version="2.0.0",
+    version="1.0.0",
 )
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+app.include_router(gugus_checker.router)
 
 
 @app.get("/")
 def root():
-    return {"message": "Gugus Checker API is running"}
-
-
-app.include_router(gugus_checker_router)
+    return {
+        "message": "Gugus Checker API",
+        "usage": "Gunakan endpoint /{NRP}, contoh: /5027251066",
+    }
