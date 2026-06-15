@@ -1,158 +1,157 @@
 # Backend GEREX 2026 - Gugus Checker
 
-Backend sederhana untuk fitur **Gugus Checker** pada penugasan Web Development GERIGI X UKM EXPO ITS 2026. Fitur ini digunakan untuk mengecek data gugus mahasiswa baru berdasarkan input **NRP**.
-
-## Deskripsi Project
-
-Project ini dibuat menggunakan **Node.js**, **Express.js**, dan **SQLite**. User dapat memasukkan NRP, lalu backend akan mencari data mahasiswa baru di database dan mengembalikan informasi berupa:
-
-- NRP
-- Nama mahasiswa
-- Gugus
-- Region
+FastAPI backend for the GERIGI X UKM EXPO ITS 2026 Gugus Checker feature. The API looks up a new student's group data by NRP and returns the student's name, gugus, and region from a local SQLite database.
 
 ## Tech Stack
 
-- Node.js
-- Express.js
+- Python
+- FastAPI
+- Uvicorn
 - SQLite
-- CORS
 
-## Struktur Project
+## Project Structure
 
 ```txt
 backend-gerex-2026/
-├── gugus-checker/
-│   ├── database.db
-│   ├── db.js
-│   ├── init-db.js
-│   ├── package.json
-│   └── server.js
-├── node_modules/
+├── app/
+│   ├── __init__.py
+│   ├── database.py
+│   ├── main.py
+│   ├── schemas.py
+│   └── routers/
+│       ├── __init__.py
+│       └── gugus_checker.py
+├── assets/
+│   └── image1.png
+├── scripts/
+│   └── init_db.py
+├── .gitignore
 ├── README.md
-└── package-lock.json
+├── database.db
+└── requirements.txt
 ```
 
-## Instalasi
+`database.db` is generated locally by the initialization script and is ignored by Git.
 
-Clone repository:
+## Getting Started
+
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/catursetyo/backend-gerex-2026.git
 cd backend-gerex-2026
 ```
 
-Install dependency:
+### 2. Create and activate a virtual environment
 
 ```bash
-npm install
+python -m venv .venv
+source .venv/bin/activate
 ```
 
-Inisialisasi database:
+On Windows:
 
 ```bash
-npm run init-db
+.venv\Scripts\activate
 ```
 
-Jalankan server:
+### 3. Install dependencies
 
 ```bash
-npm run dev
+pip install -r requirements.txt
 ```
 
-Server akan berjalan di:
+### 4. Initialize the database
+
+```bash
+python scripts/init_db.py
+```
+
+This command creates `database.db`, recreates the tables, and inserts sample data.
+
+### 5. Run the API server
+
+```bash
+uvicorn app.main:app --reload
+```
+
+By default, the server runs at:
 
 ```txt
-http://localhost:3000
+http://127.0.0.1:8000
 ```
 
 ## Database Schema
 
-Project ini menggunakan 3 tabel utama:
+The project uses three main tables:
 
-<img src="/assets/image1.png">
+<img src="/assets/image1.png" alt="Database schema">
 
-Relasinya adalah satu **region** dapat memiliki banyak **gugus**, dan satu **gugus** dapat memiliki banyak **mahasiswa baru**.
+- `regions`: stores region names.
+- `gugus`: stores gugus names and links each gugus to a region.
+- `mahasiswa_baru`: stores student NRP, name, and assigned gugus.
 
-## Endpoint API
+Relationships:
 
-### Cek Status API
+- One region can have many gugus.
+- One gugus can have many new students.
+
+The database is initialized with the following sample records:
+
+| NRP | Name | Gugus | Region |
+| --- | --- | --- | --- |
+| 5027251066 | Catur Setyo Ragil | Gugus Arjuna | Region Surabaya |
+| 5027251001 | Evandra Raditya | Gugus Bima | Region Surabaya |
+| 5027251051 | Hendra Manudinata | Gugus Nakula | Region Luar Surabaya |
+
+## API Endpoints
+
+### Health Check
 
 ```http
 GET /
 ```
 
-Contoh response:
+Example response:
 
 ```json
 {
-  "message": "Gugus Checker API is running"
+  "message": "Gugus Checker API",
+  "usage": "Gunakan endpoint /{NRP}, contoh: /5027251066"
 }
 ```
 
-### Gugus Checker
+### Check Gugus by NRP
 
 ```http
-GET /api/gugus-checker?nrp=5027251066
+GET /{nrp}
 ```
 
-Endpoint ini digunakan untuk mencari data gugus mahasiswa baru berdasarkan NRP.
+Example request:
 
-## Contoh Response Berhasil
+```http
+GET /5027251066
+```
+
+The `nrp` path parameter must contain numbers only.
+
+Example success response:
 
 ```json
 {
-  "success": true,
-  "message": "Data gugus berhasil ditemukan",
-  "data": {
-    "nrp": "5027251066",
-    "nama": "Catur Setyo Ragil",
-    "gugus": "Gugus Arjuna",
-    "region": "Region Surabaya"
-  }
+  "nrp": "5027251066",
+  "nama": "Catur Setyo Ragil",
+  "gugus": "Gugus Arjuna",
+  "region": "Region Surabaya"
 }
 ```
 
-## Contoh Response Jika NRP Kosong
+Example response when the NRP is not found:
 
 ```json
 {
-  "success": false,
-  "message": "NRP wajib diisi"
+  "detail": "Data mahasiswa tidak ditemukan"
 }
 ```
 
-## Contoh Response Jika Data Tidak Ditemukan
-
-```json
-{
-  "success": false,
-  "message": "Data mahasiswa dengan NRP tersebut tidak ditemukan"
-}
-```
-
-## Alur Endpoint API
-
-1. User memasukkan NRP.
-2. Frontend mengirim request ke endpoint `/api/gugus-checker?nrp=...`.
-3. Backend mengambil NRP dari query parameter.
-4. Backend memvalidasi apakah NRP sudah diisi.
-5. Jika NRP kosong, backend mengembalikan error.
-6. Jika NRP ada, backend mencari data mahasiswa di database.
-7. Backend melakukan join antara tabel `mahasiswa_baru`, `gugus`, dan `regions`.
-8. Jika data ditemukan, backend mengembalikan NRP, nama, gugus, dan region.
-9. Jika data tidak ditemukan, backend mengembalikan pesan error.
-
-## Validasi dan Keamanan
-
-Backend menggunakan parameterized query dengan placeholder `?` saat menjalankan query database. Hal ini bertujuan untuk memisahkan query SQL dan input user agar lebih aman dari SQL Injection.
-
-Contoh:
-
-```js
-WHERE m.nrp = ?
-```
-
-Nilai NRP dimasukkan secara terpisah melalui array parameter, bukan langsung digabungkan ke string SQL.
-
----
+FastAPI returns HTTP `422 Unprocessable Entity` when the path parameter does not match the numeric NRP format.
